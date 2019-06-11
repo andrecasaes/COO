@@ -11,14 +11,15 @@ public class EP2 {
 
 		boasVindas();
 
-		Collection<String> listaDeParticipantes = lerParticipantes();
-		for (String email : listaDeParticipantes) {
-			m.participantes.add(new Participantes(email));
-		}
+		//Collection<String> listaDeParticipantes = lerParticipantes();
+		//for (String email : listaDeParticipantes) {
+		//	m.participantes.add(new Participantes(email));
+		//}
 
-		LocalDate[] intervalo = lerIntervalo();
+		//LocalDate[] intervalo = lerIntervalo();
 
-		m.marcarReuniaoEntre(intervalo[0], intervalo[1], listaDeParticipantes);
+		//m.marcarReuniaoEntre(intervalo[0], intervalo[1], listaDeParticipantes);
+		testaSalas();
 	}
 
 	public static void boasVindas() {
@@ -74,6 +75,17 @@ public class EP2 {
 		} while (resposta[0].isAfter(resposta[1]));
 
 		return resposta;
+	}
+	public static void testaSalas() {
+		System.out.println("Bora testar as salas parça");
+		GerenciadorDeSalas g = new GerenciadorDeSalas();
+		g.imprimeSalas();
+		g.adicionaSalaChamada("215", 1, "teste");
+		g.adicionaSalaChamada("216", 1, "teste");
+		g.adicionaSalaChamada("217", 1, "teste");
+		g.adicionaSalaChamada("218", 1, "teste");
+		g.imprimeSalas();
+
 	}
 }
 
@@ -209,4 +221,75 @@ class Participantes {
 	Participantes(String email) {
 		this.email = email;
 	}
+}
+class Sala{
+	String nome;
+	String local;
+	String observacoes;
+	int capacidade;
+
+	Sala(String nome,int capacidade,String observacoes){
+		this.nome = nome;
+		this.capacidade = capacidade;
+		this.observacoes = observacoes;
+	}
+}
+class Reserva{
+	Sala sala;
+	LocalDateTime inicio;
+	LocalDateTime fim;
+
+	Reserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
+		this.sala = sala;
+		this.inicio = inicio;
+		this.fim = fim;
+	}
+	public Sala getSala(){
+		return this.sala;
+	}
+	public LocalDateTime getInicio(){
+		return this.inicio;
+	}
+	public LocalDateTime getFim(){
+		return this.fim;
+	}
+}
+class GerenciadorDeSalas{
+	List<Sala> salas;
+	void adicionaSalaChamada(String nome, int capacidade, String descricao){
+		if (!(salas == null)) {
+			for (Sala sala : salas) {
+				System.out.println("Lista:");
+				System.out.println(sala.nome + " " + sala.capacidade);
+			}
+		}
+		salas.add(salas.size(),new Sala(nome,capacidade,descricao));
+	}
+	void removeSalaChamada(String nome){
+		for (Sala sala : salas) {
+			if (sala.nome.equals(nome)) salas.remove(sala);
+		}
+	}
+	void imprimeSalas(){
+		if (!(salas == null)) {
+			for (Sala sala : salas) {
+				System.out.println("Lista:");
+				System.out.println(sala.nome + " " + sala.capacidade);
+			}
+		}
+	}
+	LinkedList listaDeSalas(){
+		LinkedList salas = new LinkedList();
+		return salas;
+	}
+	void adicionaSala(Sala sala){
+
+	}
+	Reserva reservaSalaChamada(String nome,LocalDateTime inicio, LocalDateTime fim){
+		Reserva reserva = null;
+		return reserva;
+	}
+	//cancelaReserva
+	//reservasParaSala
+	//imprimeReservasDaSala
 }
