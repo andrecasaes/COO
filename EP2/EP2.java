@@ -319,8 +319,18 @@ class GerenciadorDeSalas{
 			System.out.println("Reserva cancelada!");
 		}
 	}
-	//reservasParaSala
+	void reservasParaSala(Sala sala) {
+		//Restorna a uma collection???
+	}
 	//imprimeReservasDaSala
+	void imprimeReservasDaSala(Sala sala){
+		System.out.println("Reservas da sala " + sala.nome + ":");
+		for (Reserva reserva : reservas) {
+			if (reserva.sala.nome.equals(sala.nome)) {
+				System.out.println("A sala está reservada de " + reserva.inicio + " até " + reserva.fim);
+			}
+		}
+	}
 }//Classe
 
 class ReservaInvalidaException extends Exception{
