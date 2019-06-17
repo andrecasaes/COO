@@ -227,16 +227,57 @@ class Participantes {
 	}
 }
 class Sala{
-	String nome;
-	String local;
-	String observacoes;
-	int capacidade;
+	private String nome;
+	private String local;
+	private String observacoes;
+	private int capacidade;
+
+	//Construtor
 
 	Sala(String nome,int capacidade,String observacoes){
+		setNome(nome);
+		setCapacidade(capacidade);
+		setObservacoes(observacoes);
+	}
+
+	// METODOS DE ACESSO
+
+	//Getters
+
+	public String getNome() {
+		return this.nome;
+	}
+
+	public String getLocal() {
+		return this.local;
+	}
+
+	public String getObservacoes() {
+		return this.observacoes;
+	}
+
+	public int getCapacidade() {
+		return this.capacidade;
+	}
+
+	//Setters
+
+	public void setNome(String nome) {
 		this.nome = nome;
-		this.capacidade = capacidade;
+	}
+
+	public void setLocal(String local) {
+		this.local = local;
+	}
+
+	public void setObservacoes(String observacoes) {
 		this.observacoes = observacoes;
 	}
+
+	public void setCapacidade(int capacidade) {
+		this.capacidade = capacidade;
+	}
+
 }
 class Reserva extends ReservaAbstrata{
 	Sala sala;
@@ -258,45 +299,55 @@ class Reserva extends ReservaAbstrata{
 		return this.fim;
 	}
 }
+
 class ReservaNull extends ReservaAbstrata{
 	
 }
+
 abstract class ReservaAbstrata{
 
 }
+
 class GerenciadorDeSalas{
+
 	List<Sala> salas = new LinkedList<>();
 	List<Reserva> reservas = new LinkedList<>();
+
 	void adicionaSalaChamada(String nome, int capacidade, String descricao){
 		Sala sala = new Sala(nome,capacidade,descricao);
 		salas.add(salas.size(),sala);
 	}
+
 	void removeSalaChamada(String nome){
 		for (Sala sala : salas) {
-			if (sala.nome.equals(nome)){
+			if (sala.getNome().equals(nome)){
 				salas.remove(sala);
 				break;
 			} 
 		}
 	}
+
 	void imprimeSalas(){
 		if (!(salas == null)) {
 			for (Sala sala : salas) {
 				System.out.println("Lista:");
-				System.out.println(sala.nome + " " + sala.capacidade);
+				System.out.println(sala.getNome() + " " + sala.getCapacidade());
 			}
 		}
 	}
+
 	List listaDeSalas(){
 		return salas;
 	}
+
 	void adicionaSala(Sala sala){
 		salas.add(salas.size(), sala);
 	}
-	Reserva reservaSalaChamada(String nome,LocalDateTime inicio, LocalDateTime fim) throws ReservaInvalidaException{
+
+	Reserva reservaSalaChamada(String nome,LocalDateTime inicio, LocalDateTime fim) throws ReservaInvalidaException {
 		Reserva novaReserva = null;
 		for (Reserva reserva : reservas) {
-			if (reserva.sala.nome.equals(nome) && reserva.inicio == inicio && reserva.fim == fim){
+			if (reserva.sala.getNome().equals(nome) && reserva.inicio == inicio && reserva.fim == fim){
 				throw new ReservaInvalidaException("Reserva já criada");
 			}
 		}
@@ -311,6 +362,7 @@ class GerenciadorDeSalas{
 		}
 		return novaReserva;
 	}
+
 	void cancelaReserva(Reserva reserva){
 		try {
 			reservaSalaChamada(reserva.sala.nome, reserva.inicio, reserva.fim);
@@ -319,14 +371,16 @@ class GerenciadorDeSalas{
 			System.out.println("Reserva cancelada!");
 		}
 	}
-	void reservasParaSala(Sala sala) {
-		//Restorna a uma collection???
+
+	Collection reservasParaSala(Sala sala) {
+		//Restorna uma collection
 	}
+
 	//imprimeReservasDaSala
 	void imprimeReservasDaSala(Sala sala){
-		System.out.println("Reservas da sala " + sala.nome + ":");
+		System.out.println("Reservas da sala " + sala.getNome() + ":");
 		for (Reserva reserva : reservas) {
-			if (reserva.sala.nome.equals(sala.nome)) {
+			if (reserva.sala.getNome().equals(sala.getNome())) {
 				System.out.println("A sala está reservada de " + reserva.inicio + " até " + reserva.fim);
 			}
 		}
