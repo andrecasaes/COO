@@ -89,7 +89,6 @@ public class EP2 {
 		g.imprimeSalas();
 		g.removeSalaChamada("217");
 		g.imprimeSalas();
-
 	}
 }
 
