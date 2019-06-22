@@ -225,6 +225,7 @@ class ReservaNull extends Reserva {
 	ReservaNull(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
 		super(sala, inicio, fim);
 	}
+<<<<<<< HEAD
 
 	@Override
 	public Sala sala() {
@@ -232,6 +233,15 @@ class ReservaNull extends Reserva {
 	}
 
 	@Override
+=======
+
+	@Override
+	public Sala sala() {
+		return null;
+	}
+
+	@Override
+>>>>>>> 7808243af6d65e0d2786a3aae8a89e6ed62ff6f3
 	public LocalDateTime inicio() {
 		return null;
 	}
@@ -354,4 +364,8 @@ class ReservaInvalidaException extends Exception{
 		super(mensagem);
 		System.out.println(mensagem);
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 7808243af6d65e0d2786a3aae8a89e6ed62ff6f3

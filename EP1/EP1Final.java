@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-
+//chcp 65001
 public class EP1 {
 	public static void main(String[] args) {
 		MarcadorDeReuniao m = new MarcadorDeReuniao();
