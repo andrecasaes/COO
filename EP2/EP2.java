@@ -19,11 +19,13 @@ public class EP2{
 			System.out.println("------- Salas adicionadas pelo metodo adicionaSalaChamada -------");
 			ge.imprimeSalas();
 			System.out.println("-----------------------------------------------------------------");
-			Sala sala = new Sala("300", 3, "Sala");
-			Sala sala2 = new Sala("213", 3, "Sala");
+			Sala sala = new SalaReal("300", 3, "Sala");
+			Sala sala2 = new SalaReal("213", 3, "Sala");
 			ge.adicionaSala(sala);
 			ge.adicionaSala(sala2);
 			ge.removeSalaChamada("215");
+			System.out.println("Tentando remover uma sala que não existe:");
+			ge.removeSalaChamada("1");
 			System.out.println("------- Adicionando as salas 213 e 300 e removendo a sala 215: -------");
 			ge.imprimeSalas();
 			System.out.println("----------------------------------------------------------------------");
@@ -92,13 +94,12 @@ public class EP2{
 				//TODO: handle exception
 			}
 			ge.imprimeReservasDaSala(sala2);
-
+			sala = new SalaReal("100", 20, "sla");
 			ge.imprimeReservasDaSala(sala);
-			
 	}
 }
 
-class Sala {
+abstract class Sala {
 	private String nome;
 	private String local;
 	private String observacoes;
@@ -113,30 +114,29 @@ class Sala {
 		setNome(nome);
 		setCapacidade(capacidade);
 		setObservacoes(observacoes);
-		this.reservas.add(new ReservaNull(null, null, null));
 	}
 
 	// METODOS DE ACESSO
 
 	//Getters
 
-	public String getNome() {
+	public String getNome() throws SalaInexistenteException {
 		return this.nome;
 	}
 
-	public String getLocal() {
+	public String getLocal() throws SalaInexistenteException {
 		return this.local;
 	}
 
-	public String getObservacoes() {
+	public String getObservacoes() throws SalaInexistenteException {
 		return this.observacoes;
 	}
 
-	public int getCapacidade() {
+	public int getCapacidade() throws SalaInexistenteException {
 		return this.capacidade;
 	}
 
-	public Collection<Reserva> getReservas() {
+	public Collection<Reserva> getReservas() throws SalaInexistenteException {
 		return this.reservas;
 	}
 
@@ -165,26 +165,65 @@ class Sala {
 
 	// METODOS DE SALA
 
-	public void addReserva(Reserva reserva) {
-		if(this.getReservas().iterator().next().inicio() == null) {
-			this.getReservas().remove(this.getReservas().iterator().next());
+	public void addReserva(Reserva reserva) throws ReservaInvalidaException {
+		try {
+			this.getReservas().add(reserva);
+		} catch(SalaInexistenteException e) {
+			throw new ReservaInvalidaException("A sala não existe.");
 		}
-		this.getReservas().add(reserva);
 	}
 
-	public void removeReserva(Reserva reserva) {
-		for(Reserva r : getReservas()) {
-			if(r.inicio().isEqual(reserva.inicio()) && r.fim().isEqual(reserva.fim()) && r.sala().equals(reserva.sala())) {
-				this.getReservas().remove(r);
+	public void removeReserva(Reserva reserva) throws ReservaInvalidaException {
+		try {
+			for(Reserva r : getReservas()) {
+				if(r.inicio().isEqual(reserva.inicio()) && r.fim().isEqual(reserva.fim()) && r.sala().equals(reserva.sala())) {
+					this.getReservas().remove(r);
+				}
 			}
-		}
-		if(this.getReservas() == null) {
-			this.getReservas().add(new ReservaNull(null, null, null));
+		} catch(SalaInexistenteException e) {
+			throw new ReservaInvalidaException("A sala não existe.");
 		}
 	}
 }
 
-abstract class Reserva {
+class SalaReal extends Sala {
+	SalaReal(String nome, int capacidade, String observacoes) {
+		super(nome, capacidade, observacoes);
+	}
+}
+
+class SalaNull extends Sala {
+	SalaNull(String nome, int capacidade, String observacoes) {
+		super(nome, capacidade, observacoes);
+	}
+
+	@Override
+	public String getNome() throws SalaInexistenteException {
+		throw new SalaInexistenteException();
+	}
+
+	@Override
+	public String getLocal() throws SalaInexistenteException {
+		throw new SalaInexistenteException();
+	}
+
+	@Override
+	public String getObservacoes() throws SalaInexistenteException {
+		throw new SalaInexistenteException();
+	}
+
+	@Override
+	public int getCapacidade() throws SalaInexistenteException {
+		throw new SalaInexistenteException();
+	}
+
+	@Override
+	public Collection<Reserva> getReservas() throws SalaInexistenteException {
+		throw new SalaInexistenteException();
+	}
+}
+
+class Reserva {
 	Sala sala;
 	LocalDateTime inicio;
 	LocalDateTime fim;
@@ -195,92 +234,61 @@ abstract class Reserva {
 		this.fim = fim;
 	}
 
-	public abstract Sala sala();
-	public abstract LocalDateTime fim();
-	public abstract LocalDateTime inicio();
-}
-
-class ReservaReal extends Reserva {
-	ReservaReal(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
-		super(sala, inicio, fim);
-	}
-
-	@Override
 	public Sala sala(){
 		return this.sala;
 	}
 
-	@Override
 	public LocalDateTime inicio(){
 		return this.inicio;
 	}
 
-	@Override
 	public LocalDateTime fim(){
 		return this.fim;
 	}
 }
 
-class ReservaNull extends Reserva {
-	ReservaNull(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
-		super(sala, inicio, fim);
-	}
-<<<<<<< HEAD
-
-	@Override
-	public Sala sala() {
-		return null;
-	}
-
-	@Override
-=======
-
-	@Override
-	public Sala sala() {
-		return null;
-	}
-
-	@Override
->>>>>>> 7808243af6d65e0d2786a3aae8a89e6ed62ff6f3
-	public LocalDateTime inicio() {
-		return null;
-	}
-
-	@Override
-	public LocalDateTime fim() {
-		return null;
-	}
-}
-
 class GerenciadorDeSalas{
-	List<Sala> salas = new LinkedList<>();
+	List<Sala> salas = new LinkedList<Sala>();
+
+	GerenciadorDeSalas() {
+		salas.add(new SalaNull(null, 0, null));
+	}
 
 	void adicionaSalaChamada(String nome, int capacidade, String descricao){
-		for (Sala sala : salas) {
-			if (sala.getNome().equals(nome)) {
-				System.out.println("A sala "+nome+" já existe");
-				return;
+		try {
+			for (Sala sala : salas) {
+				if (sala.getNome().equals(nome)) {
+					System.out.println("A sala "+nome+" já existe");
+					return;
+				}
 			}
+		} catch(SalaInexistenteException e) {
+			salas.remove(salas.iterator().next());
 		}
-		Sala sala = new Sala(nome,capacidade,descricao);
-		this.salas.add(sala);
+		Sala sala = new SalaReal(nome,capacidade,descricao);
+		adicionaSala(sala);
 	}
 
 	void removeSalaChamada(String nome){
-		for (Sala sala : salas) {
-			if (sala.getNome().equals(nome)){
-				salas.remove(sala);
-				break;
-			} 
-		}
+		try {
+			for (Sala sala : salas) {
+				if (sala.getNome().equals(nome)){
+					salas.remove(sala);
+					return;
+				} 
+			}
+		} catch(SalaInexistenteException e) {}
+		System.out.println("A sala não pode ser removida porque não existe.");
 	}
 
 	void imprimeSalas(){
-		if (!(salas == null)) {
+		try {
 			System.out.println("Lista:");
 			for (Sala sala : salas) {
 				System.out.println("A sala "+ sala.getNome() + " tem capacidade de " + sala.getCapacidade()+" pessoas.");
 			}
+		} catch(SalaInexistenteException e) {
+			System.out.println("Ainda não há salas.");
 		}
 	}
 
@@ -289,45 +297,44 @@ class GerenciadorDeSalas{
 	}
 
 	void adicionaSala(Sala sala){
-		salas.add(salas.size(), sala);
+		this.salas.add(sala);
 	}
 
 	Reserva reservaSalaChamada(String nome, LocalDateTime inicio, LocalDateTime fim) throws ReservaInvalidaException {
-		//Sala que estamos procurando começa como null
-		Sala salaAlvo = null;
+		//Sala que estamos procurando começa como uma SalaNull
+		Sala salaAlvo = new SalaNull(null, 0, null);
 
 		//procurando a sala na lista de salas
-		for(Sala sala : salas) {
-			if(sala.getNome().equals(nome)) {
-				salaAlvo = sala;
-				break;
+		try {
+			for(Sala sala : salas) {
+				if(sala.getNome().equals(nome)) {
+					salaAlvo = sala;
+					break;
+				}
 			}
+
+			for(Reserva reservaDaSala : salaAlvo.getReservas()) {
+				LocalDateTime inicioExistente = reservaDaSala.inicio();
+				LocalDateTime fimExistente = reservaDaSala.fim();
+
+				if(inicioExistente == null) break;
+
+				if(inicioExistente.isEqual(inicio) && fimExistente.isEqual(fim)) return (new Reserva(salaAlvo, inicio, fim));
+
+				if((inicioExistente.isBefore(inicio) && fimExistente.isAfter(fim)) 
+				|| (inicioExistente.isAfter(inicio) && fimExistente.isBefore(fim))
+				|| (inicioExistente.isBefore(inicio) && inicioExistente.isBefore(fim) && fimExistente.isBefore(fim) && fimExistente.isAfter(inicio))
+				|| (inicioExistente.isAfter(inicio) && inicioExistente.isBefore(fim) && fimExistente.isAfter(fim) && fimExistente.isAfter(inicio))
+				|| inicioExistente.isEqual(inicio) || fimExistente.isEqual(fim)) {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+					throw new ReservaInvalidaException("Reserva Invalida! ("+nome+": "+inicio.format(formatter)+" -> "+fim.format(formatter)+")");
+				}
+			}
+		} catch(SalaInexistenteException e) {
+			throw new ReservaInvalidaException("A sala não existe.");
 		}
 
-		//Criando uma reserva null
-		Reserva reserva = new ReservaNull(null, null, null);
-
-		//Se a sala não existir, retornamos a reserva null
-		if(salaAlvo == null) throw new ReservaInvalidaException("A sala " + nome + " não existe.");
-
-		for(Reserva reservaDaSala : salaAlvo.getReservas()) {
-			LocalDateTime inicioExistente = reservaDaSala.inicio();
-			LocalDateTime fimExistente = reservaDaSala.fim();
-
-			if(inicioExistente == null) break;
-
-			if(inicioExistente.isEqual(inicio) && fimExistente.isEqual(fim)) return (new ReservaReal(salaAlvo, inicio, fim));
-
-			if((inicioExistente.isBefore(inicio) && fimExistente.isAfter(fim)) 
-			|| (inicioExistente.isAfter(inicio) && fimExistente.isBefore(fim))
-			|| (inicioExistente.isBefore(inicio) && inicioExistente.isBefore(fim) && fimExistente.isBefore(fim) && fimExistente.isAfter(inicio))
-			|| (inicioExistente.isAfter(inicio) && inicioExistente.isBefore(fim) && fimExistente.isAfter(fim) && fimExistente.isAfter(inicio))
-			|| inicioExistente.isEqual(inicio) || fimExistente.isEqual(fim)) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-				throw new ReservaInvalidaException("Reserva Invalida! ("+nome+": "+inicio.format(formatter)+" -> "+fim.format(formatter)+")");
-			}
-		}
-		reserva = new ReservaReal(salaAlvo, inicio, fim);
+		Reserva reserva = new Reserva(salaAlvo, inicio, fim);
 		salaAlvo.addReserva(reserva);
 
 		return reserva;
@@ -335,26 +342,42 @@ class GerenciadorDeSalas{
 	}
 
 	void cancelaReserva(Reserva reserva) {
+		try {
 			reserva.sala().removeReserva(reserva);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 			System.out.println("Reserva cancelada! (" + reserva.sala().getNome() + ": " + reserva.inicio().format(formatter) + " -> " + reserva.fim().format(formatter) + ")");
+		} catch(SalaInexistenteException e) {
+			System.out.println("A sala não existe.");
+		} catch(ReservaInvalidaException ex) {
+			System.out.println("A reserva não existe.");
+		}
 	}
 
 	Collection reservasParaSala(Sala sala) {
-		return sala.getReservas();
+		try {
+			return sala.getReservas();
+		} catch(SalaInexistenteException e) {
+			System.out.println("A sala não existe.");
+			return null;
+		}
 	}
 
 	void imprimeReservasDaSala(Sala sala){
-		if (sala.getReservas().iterator().next().inicio() == null) {
-			System.out.println("A sala "+sala.getNome()+" não possui reservas.");
-		}else{
+		try {
+			boolean imprimiu = false;
 			System.out.println("Reservas da sala " + sala.getNome() + ":");
 			for (Reserva reserva : sala.getReservas()) {
 				if (reserva.sala.getNome().equals(sala.getNome())) {
 					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 					System.out.println("A sala está reservada de " + reserva.inicio.format(formatter) + " até " + reserva.fim.format(formatter));
+					imprimiu = true;
 				}
 			}
+			if(!imprimiu) {
+				System.out.println("A sala ainda não possui reservas.");
+			}
+		} catch(SalaInexistenteException e) {
+			System.out.println("A sala não existe.");
 		}
 	}
 }//Classe
@@ -364,8 +387,9 @@ class ReservaInvalidaException extends Exception{
 		super(mensagem);
 		System.out.println(mensagem);
 	}
-<<<<<<< HEAD
 }
-=======
+
+class SalaInexistenteException extends Exception{
+	SalaInexistenteException(){
+	}
 }
->>>>>>> 7808243af6d65e0d2786a3aae8a89e6ed62ff6f3
