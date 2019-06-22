@@ -3,11 +3,98 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-//chcp 6500
 
-public class EP2 {
+public class EP2{
 	public static void main(String[] args) {
+	
+		GerenciadorDeSalas ge = new GerenciadorDeSalas();
+			ge.adicionaSalaChamada("210", 60, "Sala de aula");
+			ge.adicionaSalaChamada("214", 60, "Sala de aula");
+			//Sala duplicada!
+			ge.adicionaSalaChamada("214", 60, "Sala de aula");
+			ge.adicionaSalaChamada("215", 60, "Sala de aula");
+			ge.adicionaSalaChamada("216", 60, "Sala de aula");
+			ge.adicionaSalaChamada("217", 60, "Sala de aula");
+			ge.adicionaSalaChamada("218", 60, "Sala de aula");
+			System.out.println("------- Salas adicionadas pelo metodo adicionaSalaChamada -------");
+			ge.imprimeSalas();
+			System.out.println("-----------------------------------------------------------------");
+			Sala sala = new Sala("300", 3, "Sala");
+			Sala sala2 = new Sala("213", 3, "Sala");
+			ge.adicionaSala(sala);
+			ge.adicionaSala(sala2);
+			ge.removeSalaChamada("215");
+			System.out.println("------- Adicionando as salas 213 e 300 e removendo a sala 215: -------");
+			ge.imprimeSalas();
+			System.out.println("----------------------------------------------------------------------");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+			String teste1 = "20/06/2019 18:00";
+			String teste2 = "20/06/2019 19:00";
+			try {
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
 
+			}
+			try {
+				teste1 = "21/06/2019 15:00";
+				teste2 = "21/06/2019 17:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			try {
+				teste1 = "21/06/2019 16:00";
+				teste2 = "21/06/2019 18:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			try {
+				teste1 = "21/06/2019 12:00";
+				teste2 = "21/06/2019 16:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			try {
+				teste1 = "21/06/2019 14:00";
+				teste2 = "21/06/2019 18:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			try {
+				teste1 = "21/06/2019 15:30";
+				teste2 = "21/06/2019 16:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			try {
+				teste1 = "21/06/2019 18:00";
+				teste2 = "21/06/2019 19:00";
+				ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			ge.imprimeReservasDaSala(sala2);
+			try {
+				Reserva re = ge.reservaSalaChamada("213", LocalDateTime.parse(teste1, formatter), LocalDateTime.parse(teste2, formatter));
+				ge.cancelaReserva(re);
+				
+			} catch (Exception e) {
+				//TODO: handle exception
+			}
+			ge.imprimeReservasDaSala(sala2);
+
+			ge.imprimeReservasDaSala(sala);
+			
 	}
 }
 
@@ -18,7 +105,7 @@ class Sala {
 	private int capacidade;
 
 	// Sala tem uma Collection de reservas porque uma sala pode ter mais de uma reserva em diferentes horarios
-	private Collection<Reserva> reservas;
+	private Collection<Reserva> reservas = new LinkedList<Reserva>();
 
 	//Construtor
 
@@ -26,8 +113,7 @@ class Sala {
 		setNome(nome);
 		setCapacidade(capacidade);
 		setObservacoes(observacoes);
-		setReservas(new LinkedList<Reserva>());
-		addReserva(new ReservaNull(null, null, null));
+		this.reservas.add(new ReservaNull(null, null, null));
 	}
 
 	// METODOS DE ACESSO
@@ -87,7 +173,14 @@ class Sala {
 	}
 
 	public void removeReserva(Reserva reserva) {
-		this.getReservas().remove(reserva);
+		for(Reserva r : getReservas()) {
+			if(r.inicio().isEqual(reserva.inicio()) && r.fim().isEqual(reserva.fim()) && r.sala().equals(reserva.sala())) {
+				this.getReservas().remove(r);
+			}
+		}
+		if(this.getReservas() == null) {
+			this.getReservas().add(new ReservaNull(null, null, null));
+		}
 	}
 }
 
@@ -153,8 +246,14 @@ class GerenciadorDeSalas{
 	List<Sala> salas = new LinkedList<>();
 
 	void adicionaSalaChamada(String nome, int capacidade, String descricao){
+		for (Sala sala : salas) {
+			if (sala.getNome().equals(nome)) {
+				System.out.println("A sala "+nome+" já existe");
+				return;
+			}
+		}
 		Sala sala = new Sala(nome,capacidade,descricao);
-		salas.add(salas.size(),sala);
+		this.salas.add(sala);
 	}
 
 	void removeSalaChamada(String nome){
@@ -168,9 +267,9 @@ class GerenciadorDeSalas{
 
 	void imprimeSalas(){
 		if (!(salas == null)) {
+			System.out.println("Lista:");
 			for (Sala sala : salas) {
-				System.out.println("Lista:");
-				System.out.println(sala.getNome() + " " + sala.getCapacidade());
+				System.out.println("A sala "+ sala.getNome() + " tem capacidade de " + sala.getCapacidade()+" pessoas.");
 			}
 		}
 	}
@@ -183,7 +282,6 @@ class GerenciadorDeSalas{
 		salas.add(salas.size(), sala);
 	}
 
-	//Mudar
 	Reserva reservaSalaChamada(String nome, LocalDateTime inicio, LocalDateTime fim) throws ReservaInvalidaException {
 		//Sala que estamos procurando começa como null
 		Sala salaAlvo = null;
@@ -208,14 +306,17 @@ class GerenciadorDeSalas{
 
 			if(inicioExistente == null) break;
 
+			if(inicioExistente.isEqual(inicio) && fimExistente.isEqual(fim)) return (new ReservaReal(salaAlvo, inicio, fim));
+
 			if((inicioExistente.isBefore(inicio) && fimExistente.isAfter(fim)) 
 			|| (inicioExistente.isAfter(inicio) && fimExistente.isBefore(fim))
-			|| (inicioExistente.isBefore(inicio) && fimExistente.isBefore(fim))
-			|| (inicioExistente.isAfter(inicio) && fimExistente.isAfter(fim))) {
-				return reserva;
+			|| (inicioExistente.isBefore(inicio) && inicioExistente.isBefore(fim) && fimExistente.isBefore(fim) && fimExistente.isAfter(inicio))
+			|| (inicioExistente.isAfter(inicio) && inicioExistente.isBefore(fim) && fimExistente.isAfter(fim) && fimExistente.isAfter(inicio))
+			|| inicioExistente.isEqual(inicio) || fimExistente.isEqual(fim)) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+				throw new ReservaInvalidaException("Reserva Invalida! ("+nome+": "+inicio.format(formatter)+" -> "+fim.format(formatter)+")");
 			}
 		}
-
 		reserva = new ReservaReal(salaAlvo, inicio, fim);
 		salaAlvo.addReserva(reserva);
 
@@ -224,12 +325,9 @@ class GerenciadorDeSalas{
 	}
 
 	void cancelaReserva(Reserva reserva) {
-		try {
-			reservaSalaChamada(reserva.sala().getNome(), reserva.inicio(), reserva.fim());
-		} catch (Exception e) {
 			reserva.sala().removeReserva(reserva);
-			System.out.println("Reserva cancelada!");
-		}
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+			System.out.println("Reserva cancelada! (" + reserva.sala().getNome() + ": " + reserva.inicio().format(formatter) + " -> " + reserva.fim().format(formatter) + ")");
 	}
 
 	Collection reservasParaSala(Sala sala) {
@@ -237,10 +335,15 @@ class GerenciadorDeSalas{
 	}
 
 	void imprimeReservasDaSala(Sala sala){
-		System.out.println("Reservas da sala " + sala.getNome() + ":");
-		for (Reserva reserva : sala.getReservas()) {
-			if (reserva.sala.getNome().equals(sala.getNome())) {
-				System.out.println("A sala está reservada de " + reserva.inicio + " até " + reserva.fim);
+		if (sala.getReservas().iterator().next().inicio() == null) {
+			System.out.println("A sala "+sala.getNome()+" não possui reservas.");
+		}else{
+			System.out.println("Reservas da sala " + sala.getNome() + ":");
+			for (Reserva reserva : sala.getReservas()) {
+				if (reserva.sala.getNome().equals(sala.getNome())) {
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+					System.out.println("A sala está reservada de " + reserva.inicio.format(formatter) + " até " + reserva.fim.format(formatter));
+				}
 			}
 		}
 	}
@@ -252,4 +355,3 @@ class ReservaInvalidaException extends Exception{
 		System.out.println(mensagem);
 	}
 }
-
