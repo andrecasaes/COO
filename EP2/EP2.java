@@ -224,9 +224,9 @@ class SalaNull extends Sala {
 }
 
 class Reserva {
-	Sala sala;
-	LocalDateTime inicio;
-	LocalDateTime fim;
+	private Sala sala;
+	private LocalDateTime inicio;
+	private LocalDateTime fim;
 
 	Reserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
 		this.sala = sala;
@@ -248,7 +248,7 @@ class Reserva {
 }
 
 class GerenciadorDeSalas{
-	List<Sala> salas = new LinkedList<Sala>();
+	private List<Sala> salas = new LinkedList<Sala>();
 
 	GerenciadorDeSalas() {
 		salas.add(new SalaNull(null, 0, null));
