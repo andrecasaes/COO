@@ -99,48 +99,27 @@ public class EP2{
 	}
 }
 
-abstract class Sala {
+class SalaData {
 	private String nome;
 	private String local;
 	private String observacoes;
 	private int capacidade;
 
-	// Sala tem uma Collection de reservas porque uma sala pode ter mais de uma reserva em diferentes horarios
-	private Collection<Reserva> reservas = new LinkedList<Reserva>();
-
-	//Construtor
-
-	Sala(String nome, int capacidade, String observacoes) {
-		setNome(nome);
-		setCapacidade(capacidade);
-		setObservacoes(observacoes);
-	}
-
-	// METODOS DE ACESSO
-
-	//Getters
-
-	public String getNome() throws SalaInexistenteException {
+	public String getNome() {
 		return this.nome;
 	}
 
-	public String getLocal() throws SalaInexistenteException {
+	public String getLocal() {
 		return this.local;
 	}
 
-	public String getObservacoes() throws SalaInexistenteException {
+	public String getObservacoes() {
 		return this.observacoes;
 	}
 
-	public int getCapacidade() throws SalaInexistenteException {
+	public int getCapacidade() {
 		return this.capacidade;
 	}
-
-	public Collection<Reserva> getReservas() throws SalaInexistenteException {
-		return this.reservas;
-	}
-
-	//Setters
 
 	public void setNome(String nome) {
 		this.nome = nome;
@@ -156,6 +135,64 @@ abstract class Sala {
 
 	public void setCapacidade(int capacidade) {
 		this.capacidade = capacidade;
+	}
+}
+
+abstract class Sala {
+	SalaData dados;
+
+	// Sala tem uma Collection de reservas porque uma sala pode ter mais de uma reserva em diferentes horarios
+	private Collection<Reserva> reservas = new LinkedList<Reserva>();
+
+	//Construtor
+
+	Sala(String nome, int capacidade, String observacoes) {
+		this.dados = new SalaData();
+		dados.setNome(nome);
+		dados.setCapacidade(capacidade);
+		dados.setObservacoes(observacoes);
+	}
+
+	// METODOS DE ACESSO
+
+	//Getters
+
+	public String getNome() throws SalaInexistenteException {
+		return dados.getNome();
+	}
+
+	public String getLocal() throws SalaInexistenteException {
+		return dados.getLocal();
+	}
+
+	public String getObservacoes() throws SalaInexistenteException {
+		return dados.getObservacoes();
+	}
+
+	public int getCapacidade() throws SalaInexistenteException {
+		return dados.getCapacidade();
+	}
+
+	public Collection<Reserva> getReservas() throws SalaInexistenteException {
+		return this.reservas;
+	}
+
+	//Setters
+
+	public void setNome(String nome) {
+		dados.setNome(nome);
+	}
+
+	public void setLocal(String local) {
+		dados.setLocal(local);
+	}
+
+	public void setObservacoes(String observacoes) {
+		dados.setObservacoes(observacoes);
+	}
+
+	public void setCapacidade(int capacidade) {
+		dados.setCapacidade(capacidade);
 	}
 
 	public void setReservas(Collection<Reserva> reservas) {
